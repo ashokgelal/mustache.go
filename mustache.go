@@ -560,22 +560,22 @@ func ParseFile(filename string) (*Template, os.Error) {
     return &tmpl, nil
 }
 
-func Render(data string, context ...interface{}) string {
+func Render(data string, context ...interface{}) (string, os.Error) {
     tmpl, err := ParseString(data)
 
     if err != nil {
-        return err.String()
+        return "", err
     }
 
-    return tmpl.Render(context...)
+    return tmpl.Render(context...), nil
 }
 
-func RenderFile(filename string, context ...interface{}) string {
+func RenderFile(filename string, context ...interface{}) (string, os.Error) {
     tmpl, err := ParseFile(filename)
 
     if err != nil {
-        return err.String()
+        return "", err
     }
 
-    return tmpl.Render(context...)
+    return tmpl.Render(context...), nil
 }

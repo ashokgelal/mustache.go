@@ -149,7 +149,7 @@ var tests = []Test{
 
 func TestBasic(t *testing.T) {
     for _, test := range tests {
-        output := Render(test.tmpl, test.context)
+        output, _ := Render(test.tmpl, test.context)
         if output != test.expected {
             t.Fatalf("%q expected %q got %q", test.tmpl, test.expected, output)
         }
@@ -159,7 +159,7 @@ func TestBasic(t *testing.T) {
 func TestFile(t *testing.T) {
     filename := path.Join(path.Join(os.Getenv("PWD"), "tests"), "test1.mustache")
     expected := "hello world"
-    output := RenderFile(filename, map[string]string{"name": "world"})
+    output, _ := RenderFile(filename, map[string]string{"name": "world"})
     if output != expected {
         t.Fatalf("testfile expected %q got %q", expected, output)
     }
@@ -168,7 +168,7 @@ func TestFile(t *testing.T) {
 func TestPartial(t *testing.T) {
     filename := path.Join(path.Join(os.Getenv("PWD"), "tests"), "test2.mustache")
     expected := "hello world"
-    output := RenderFile(filename, map[string]string{"Name": "world"})
+    output, _ := RenderFile(filename, map[string]string{"Name": "world"})
     if output != expected {
         t.Fatalf("testpartial expected %q got %q", expected, output)
     }
@@ -177,15 +177,15 @@ func TestSectionPartial(t *testing.T) {
     filename := path.Join(path.Join(os.Getenv("PWD"), "tests"), "test3.mustache")
     expected := "Mike\nJoe\n"
     context := map[string]interface{}{"users": []User{{"Mike", 1}, {"Joe", 2}}}
-    output := RenderFile(filename, context)
+    output, _ := RenderFile(filename, context)
     if output != expected {
         t.Fatalf("testSectionPartial expected %q got %q", expected, output)
     }
 }
 
 func TestMultiContext(t *testing.T) {
-    output := Render(`{{hello}} {{World}}`, map[string]string{"hello": "hello"}, struct{ World string }{"world"})
-    output2 := Render(`{{hello}} {{World}}`, struct{ World string }{"world"}, map[string]string{"hello": "hello"})
+    output, _ := Render(`{{hello}} {{World}}`, map[string]string{"hello": "hello"}, struct{ World string }{"world"})
+    output2, _ := Render(`{{hello}} {{World}}`, struct{ World string }{"world"}, map[string]string{"hello": "hello"})
     if output != "hello world" || output2 != "hello world" {
         t.Fatalf("TestMultiContext expected %q got %q", "hello world", output)
     }
@@ -200,9 +200,16 @@ var malformed = []Test{
 
 func TestMalformed(t *testing.T) {
     for _, test := range malformed {
-        output := Render(test.tmpl, test.context)
-        if strings.Index(output, test.expected) == -1 {
-            t.Fatalf("%q expected %q in error %q", test.tmpl, test.expected, output)
+        _, err := Render(test.tmpl, test.context)
+        if strings.Index(err.String(), test.expected) == -1 {
+            t.Fatalf("%q expected %q in error %q", test.tmpl, test.expected, err.String())
         }
     }
+}
+
+func TestMissingTemplate(t *testing.T) {
+      output, err := RenderFile("foobar.template", []string{})
+      if err == nil || output != ""{
+          t.Fatalf("expected error got nil")
+      }
 }
