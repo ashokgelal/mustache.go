@@ -49,7 +49,7 @@ func (u *User) Func5() (*settings, error) {
 
 func (u *User) Func6() (*[]interface{}, error) {
 	var v = make([]interface{}, 0)
-	v=append(v, &settings{true})
+	v = append(v, &settings{true})
 	return &v, nil
 }
 
@@ -64,7 +64,7 @@ func (u *User) Truefunc2() bool {
 func makeVector(n int) []interface{} {
 	v := make([]interface{}, 0)
 	for i := 0; i < n; i++ {
-		v=append(v, &User{"Mike", 1})
+		v = append(v, &User{"Mike", 1})
 	}
 	return v
 }

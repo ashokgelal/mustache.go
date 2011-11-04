@@ -35,7 +35,7 @@ type Template struct {
 	p       int
 	curline int
 	dir     string
-	elems     []interface{}
+	elems   []interface{}
 }
 
 type parseError struct {
@@ -230,7 +230,7 @@ func (tmpl *Template) parseSection(section *sectionElement) error {
 				section.elems = append(section.elems, &varElement{tag[1 : len(tag)-1], true})
 			}
 		default:
-			section.elems=append(section.elems, &varElement{tag, false})
+			section.elems = append(section.elems, &varElement{tag, false})
 		}
 	}
 
@@ -243,13 +243,13 @@ func (tmpl *Template) parse() error {
 
 		if err == io.EOF {
 			//put the remaining text in a block
-			tmpl.elems=append(tmpl.elems, &textElement{[]byte(text)})
+			tmpl.elems = append(tmpl.elems, &textElement{[]byte(text)})
 			return nil
 		}
 
 		// put text into an item
 		text = text[0 : len(text)-len(tmpl.otag)]
-		tmpl.elems=append(tmpl.elems, &textElement{[]byte(text)})
+		tmpl.elems = append(tmpl.elems, &textElement{[]byte(text)})
 
 		if tmpl.p < len(tmpl.data) && tmpl.data[tmpl.p] == '{' {
 			text, err = tmpl.readString("}" + tmpl.ctag)
@@ -285,7 +285,7 @@ func (tmpl *Template) parse() error {
 			if err != nil {
 				return err
 			}
-			tmpl.elems=append(tmpl.elems, &se)
+			tmpl.elems = append(tmpl.elems, &se)
 		case '/':
 			return parseError{tmpl.curline, "unmatched close tag"}
 		case '>':
@@ -294,7 +294,7 @@ func (tmpl *Template) parse() error {
 			if err != nil {
 				return err
 			}
-			tmpl.elems=append(tmpl.elems, partial)
+			tmpl.elems = append(tmpl.elems, partial)
 		case '=':
 			if tag[len(tag)-1] != '=' {
 				return parseError{tmpl.curline, "Invalid meta tag"}
@@ -308,10 +308,10 @@ func (tmpl *Template) parse() error {
 		case '{':
 			//use a raw tag
 			if tag[len(tag)-1] == '}' {
-				tmpl.elems=append(tmpl.elems, &varElement{tag[1 : len(tag)-1], true})
+				tmpl.elems = append(tmpl.elems, &varElement{tag[1 : len(tag)-1], true})
 			}
 		default:
-			tmpl.elems=append(tmpl.elems, &varElement{tag, false})
+			tmpl.elems = append(tmpl.elems, &varElement{tag, false})
 		}
 	}
 
@@ -451,7 +451,7 @@ loop:
 
 func renderSection(section *sectionElement, contextChain []interface{}, buf io.Writer) {
 	value := lookup(contextChain, section.name)
-	var context = contextChain[len(contextChain) - 1].(reflect.Value)
+	var context = contextChain[len(contextChain)-1].(reflect.Value)
 	var contexts = make([]interface{}, 0)
 	// if the value is nil, check if it's an inverted section
 	isNil := isNil(value)
@@ -462,23 +462,23 @@ func renderSection(section *sectionElement, contextChain []interface{}, buf io.W
 		switch val := valueInd; val.Kind() {
 		case reflect.Slice:
 			for i := 0; i < val.Len(); i++ {
-				contexts=append(contexts, val.Index(i))
+				contexts = append(contexts, val.Index(i))
 			}
 		case reflect.Array:
 			for i := 0; i < val.Len(); i++ {
-				contexts=append(contexts, val.Index(i))
+				contexts = append(contexts, val.Index(i))
 			}
 		case reflect.Map, reflect.Struct:
-			contexts=append(contexts, value)
+			contexts = append(contexts, value)
 		default:
-			contexts=append(contexts, context)
+			contexts = append(contexts, context)
 		}
 	}
 
 	//by default we execute the section
 	for j := 0; j < len(contexts); j++ {
 		ctx := contexts[j].(reflect.Value)
-		contextChain=append(contextChain, ctx)
+		contextChain = append(contextChain, ctx)
 		for i := 0; i < len(section.elems); i++ {
 			renderElement(section.elems[i], contextChain, buf)
 		}
@@ -524,7 +524,7 @@ func (tmpl *Template) Render(context ...interface{}) string {
 	var contextChain []interface{}
 	for _, c := range context {
 		val := reflect.ValueOf(c)
-		contextChain=append(contextChain, val)
+		contextChain = append(contextChain, val)
 	}
 	tmpl.renderTemplate(contextChain, &buf)
 	return buf.String()
