@@ -1,10 +1,10 @@
 package mustache
 
 import (
+	"testing"
 	"os"
 	"path"
 	"strings"
-	"testing"
 )
 
 type Test struct {

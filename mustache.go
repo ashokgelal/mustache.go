@@ -2,7 +2,6 @@ package mustache
 
 import (
 	"bytes"
-//	"container/vector"
 	"errors"
 	"fmt"
 	"io"
@@ -522,7 +521,7 @@ func (tmpl *Template) renderTemplate(contextChain []interface{}, buf io.Writer) 
 
 func (tmpl *Template) Render(context ...interface{}) string {
 	var buf bytes.Buffer
-	var contextChain = make([]interface{}, len(context))
+	var contextChain []interface{}
 	for _, c := range context {
 		val := reflect.ValueOf(c)
 		contextChain=append(contextChain, val)
